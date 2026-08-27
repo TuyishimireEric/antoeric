@@ -71,11 +71,11 @@
     pointer-events: none;
     background:
       linear-gradient(100deg,
-        rgba(36, 28, 22, 0.97) 0%,
-        rgba(36, 28, 22, 0.88) 30%,
-        rgba(36, 28, 22, 0.42) 55%,
-        rgba(36, 28, 22, 0.05) 78%),
-      linear-gradient(to top, rgba(29, 23, 18, 0.85), transparent 32%);
+        rgba(36, 28, 22, 0.78) 0%,
+        rgba(36, 28, 22, 0.5) 26%,
+        rgba(36, 28, 22, 0.16) 46%,
+        rgba(36, 28, 22, 0) 62%),
+      linear-gradient(to top, rgba(29, 23, 18, 0.6), transparent 20%);
   }
 
   .dust-canvas {
@@ -87,6 +87,7 @@
   }
 
   .hero-content {
+    text-shadow: 0 2px 22px rgba(29, 23, 18, 0.75), 0 1px 4px rgba(29, 23, 18, 0.5);
     position: relative;
     z-index: 2;
     height: 100%;
@@ -188,7 +189,7 @@
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
     border-top: 1px solid var(--gold-faint);
-    background: rgba(29, 23, 18, 0.6);
+    background: rgba(29, 23, 18, 0.45);
     -webkit-backdrop-filter: blur(16px);
     backdrop-filter: blur(16px);
   }
@@ -377,15 +378,15 @@
     .hero-scrim {
       background:
         linear-gradient(168deg,
-          rgba(36, 28, 22, 0.94) 0%,
-          rgba(36, 28, 22, 0.72) 42%,
-          rgba(36, 28, 22, 0.30) 70%,
-          rgba(36, 28, 22, 0.12) 100%),
-        linear-gradient(to top, rgba(29, 23, 18, 0.9), transparent 36%);
+          rgba(36, 28, 22, 0.82) 0%,
+          rgba(36, 28, 22, 0.48) 38%,
+          rgba(36, 28, 22, 0.14) 64%,
+          rgba(36, 28, 22, 0.04) 100%),
+        linear-gradient(to top, rgba(29, 23, 18, 0.72), transparent 26%);
     }
     .hero-content {
       justify-content: flex-start;
-      padding-top: clamp(3.5rem, 12vh, 6rem);
+      padding-top: clamp(2rem, 7vh, 3.5rem);
     }
     .count-bar { grid-template-columns: repeat(4, minmax(0, 1fr)); }
     .cue { display: none; }
