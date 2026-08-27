@@ -241,17 +241,20 @@
   .cue:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; }
   .cue-arrow { font-family: var(--serif); font-size: 1rem; }
 
-  /* ═════════ Share button & toast ═════════ */
-  .share-btn {
+  /* ═════════ Share button & menu ═════════ */
+  .share-wrap {
     position: fixed;
     top: 18px;
     right: 18px;
     z-index: 40;
+  }
+
+  .share-btn {
     display: flex;
     align-items: center;
     gap: 0.55rem;
     padding: 0.62rem 1.1rem;
-    background: rgba(29, 23, 18, 0.5);
+    background: rgba(29, 23, 18, 0.55);
     -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
     border: 1px solid var(--gold-soft);
@@ -264,17 +267,69 @@
     letter-spacing: 0.28em;
     text-indent: 0.28em;
     text-transform: uppercase;
-    transition: background 0.3s ease, color 0.3s ease;
+    transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
   }
-  .share-btn:hover, .share-btn:focus-visible { background: rgba(201, 169, 106, 0.18); color: var(--gold); }
+  .share-btn:hover, .share-btn:focus-visible,
+  .share-wrap.open .share-btn {
+    background: rgba(29, 23, 18, 0.85);
+    border-color: var(--gold);
+    color: var(--gold);
+  }
   .share-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
   .share-btn svg { display: block; flex: none; }
+
+  .share-menu {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    min-width: 210px;
+    padding: 6px;
+    background: rgba(29, 23, 18, 0.92);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--gold-faint);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    transition: opacity 0.28s ease, transform 0.28s ease, visibility 0.28s;
+  }
+  .share-wrap.open .share-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+  }
+
+  .share-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.72rem 0.95rem;
+    background: none;
+    border: none;
+    color: var(--ivory-dim);
+    cursor: pointer;
+    font-family: var(--sans);
+    font-weight: 300;
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    text-decoration: none;
+    text-align: left;
+    transition: background 0.25s ease, color 0.25s ease;
+  }
+  .share-item:hover, .share-item:focus-visible {
+    background: rgba(201, 169, 106, 0.13);
+    color: var(--gold);
+  }
+  .share-item:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; }
+  .share-item svg { flex: none; }
 
   .toast {
     position: fixed;
     top: 72px;
     right: 18px;
-    z-index: 40;
+    z-index: 39;
     max-width: min(80vw, 340px);
     padding: 0.75rem 1.1rem;
     background: rgba(29, 23, 18, 0.88);
@@ -518,12 +573,28 @@
   </footer>
 </main>
 
-<button class="share-btn" id="shareBtn" aria-label="Share this page">
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <circle cx="18" cy="5" r="2.6"/><circle cx="6" cy="12" r="2.6"/><circle cx="18" cy="19" r="2.6"/>
-    <line x1="8.3" y1="10.7" x2="15.7" y2="6.3"/><line x1="8.3" y1="13.3" x2="15.7" y2="17.7"/>
-  </svg><span>Share</span>
-</button>
+<div class="share-wrap" id="shareWrap">
+  <button class="share-btn" id="shareBtn" aria-haspopup="true" aria-expanded="false" aria-label="Share this page">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="18" cy="5" r="2.6"/><circle cx="6" cy="12" r="2.6"/><circle cx="18" cy="19" r="2.6"/>
+      <line x1="8.3" y1="10.7" x2="15.7" y2="6.3"/><line x1="8.3" y1="13.3" x2="15.7" y2="17.7"/>
+    </svg><span>Share</span>
+  </button>
+  <div class="share-menu" id="shareMenu" role="menu" aria-label="Share options">
+    <a class="share-item" id="shareWa" role="menuitem" href="#" target="_blank" rel="noopener">
+      <svg width="16" height="16" viewBox="0 0 448 512" fill="currentColor" aria-hidden="true"><path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/></svg>
+      <span>WhatsApp</span>
+    </a>
+    <button class="share-item" id="shareCopy" role="menuitem">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>
+      <span>Copy link</span>
+    </button>
+    <button class="share-item" id="shareMore" role="menuitem">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>
+      <span>More&hellip;</span>
+    </button>
+  </div>
+</div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <!-- Lightbox -->
@@ -665,7 +736,7 @@
     gsap.set(bar, { yPercent: 101 });
     gsap.set(units, { autoAlpha: 0 });
     gsap.set('.cue', { autoAlpha: 0 });
-    gsap.set('.share-btn', { autoAlpha: 0, y: -12 });
+    gsap.set('.share-wrap', { autoAlpha: 0, y: -12 });
 
     // The roll-up: digits sweep from 0 to live values, then the loop takes over
     var p0 = parts(Date.now());
@@ -700,7 +771,7 @@
         }
       }, 2.25)
       .to('.cue', { autoAlpha: 1, duration: 0.6 }, 3.1)
-      .to('.share-btn', { autoAlpha: 1, y: 0, duration: 0.6 }, 3.25);
+      .to('.share-wrap', { autoAlpha: 1, y: 0, duration: 0.6 }, 3.25);
 
     // Slow Ken Burns drift, forever
     gsap.to(photo, { scale: 1.18, duration: 26, yoyo: true, repeat: -1, ease: 'sine.inOut', delay: 1.8 });
@@ -762,9 +833,13 @@
     requestAnimationFrame(drawDust);
   }
 
-  // ═════════ Share ═════════
+  // ═════════ Share menu ═════════
   var SHARE_URL = 'https://tuyishimireeric.github.io/antoeric/';
+  var shareWrap = document.getElementById('shareWrap');
   var shareBtn = document.getElementById('shareBtn');
+  var waLink = document.getElementById('shareWa');
+  var copyBtn = document.getElementById('shareCopy');
+  var moreBtn = document.getElementById('shareMore');
   var toast = document.getElementById('toast');
   var toastTimer = null;
 
@@ -776,6 +851,10 @@
     if (days === 0) return 'Tomorrow, Eric & Antoinette say “I do”! 💍';
     return 'Only ' + days + (days === 1 ? ' day' : ' days') + ' to go — Eric & Antoinette are getting married on September 5, 2026! 💍';
   }
+  function shareUrl() {
+    // per-day link so chat apps fetch a fresh preview card
+    return SHARE_URL + '?d=' + Math.max(0, Math.floor((target - Date.now()) / 86400000));
+  }
 
   function showToast(msg) {
     toast.textContent = msg;
@@ -784,20 +863,48 @@
     toastTimer = setTimeout(function () { toast.classList.remove('show'); }, 2800);
   }
 
-  shareBtn.addEventListener('click', function () {
-    var days = Math.max(0, Math.floor((target - Date.now()) / 86400000));
-    var url = SHARE_URL + '?d=' + days; // per-day link so chat apps fetch a fresh preview card
-    var text = shareText();
-    if (navigator.share) {
-      navigator.share({ title: 'Eric & Antoinette — Our Wedding', text: text, url: url }).catch(function () {});
-    } else if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text + '\n' + url).then(function () {
-        showToast('Copied! Paste it into WhatsApp or anywhere.');
-      }, function () { showToast(url); });
+  function setOpen(open) {
+    shareWrap.classList.toggle('open', open);
+    shareBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+
+  shareBtn.addEventListener('click', function (e) {
+    e.stopPropagation();
+    var open = !shareWrap.classList.contains('open');
+    if (open) {
+      waLink.href = 'https://wa.me/?text=' + encodeURIComponent(shareText() + '\n' + shareUrl());
+    }
+    setOpen(open);
+  });
+  document.addEventListener('click', function (e) {
+    if (!shareWrap.contains(e.target)) setOpen(false);
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') setOpen(false);
+  });
+
+  waLink.addEventListener('click', function () { setOpen(false); });
+
+  copyBtn.addEventListener('click', function () {
+    var payload = shareText() + '\n' + shareUrl();
+    setOpen(false);
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(payload).then(function () {
+        showToast('Copied! Paste it into any chat.');
+      }, function () { showToast(shareUrl()); });
     } else {
-      showToast(url);
+      showToast(shareUrl());
     }
   });
+
+  if (navigator.share) {
+    moreBtn.addEventListener('click', function () {
+      setOpen(false);
+      navigator.share({ title: 'Eric & Antoinette — Our Wedding', text: shareText(), url: shareUrl() }).catch(function () {});
+    });
+  } else {
+    moreBtn.style.display = 'none';
+  }
 
   // ═════════ Gallery scroll reveal ═════════
   var figures = Array.prototype.slice.call(document.querySelectorAll('.masonry figure'));
