@@ -9,7 +9,7 @@
 <meta property="og:description" content="Saturday, September 5, 2026 — count down the days with us.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://tuyishimireeric.github.io/antoeric/">
-<meta property="og:image" content="https://tuyishimireeric.github.io/antoeric/og.jpg">
+<meta property="og:image" content="https://tuyishimireeric.github.io/antoeric/og.jpg?v=20260827">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
@@ -241,6 +241,56 @@
   .cue:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; }
   .cue-arrow { font-family: var(--serif); font-size: 1rem; }
 
+  /* ═════════ Share button & toast ═════════ */
+  .share-btn {
+    position: fixed;
+    top: 18px;
+    right: 18px;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.62rem 1.1rem;
+    background: rgba(29, 23, 18, 0.5);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--gold-soft);
+    border-radius: 999px;
+    color: var(--ivory);
+    cursor: pointer;
+    font-family: var(--sans);
+    font-weight: 300;
+    font-size: 0.66rem;
+    letter-spacing: 0.28em;
+    text-indent: 0.28em;
+    text-transform: uppercase;
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+  .share-btn:hover, .share-btn:focus-visible { background: rgba(201, 169, 106, 0.18); color: var(--gold); }
+  .share-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+  .share-btn svg { display: block; flex: none; }
+
+  .toast {
+    position: fixed;
+    top: 72px;
+    right: 18px;
+    z-index: 40;
+    max-width: min(80vw, 340px);
+    padding: 0.75rem 1.1rem;
+    background: rgba(29, 23, 18, 0.88);
+    border: 1px solid var(--gold-faint);
+    color: var(--ivory-dim);
+    font-family: var(--sans);
+    font-weight: 300;
+    font-size: 0.74rem;
+    letter-spacing: 0.05em;
+    opacity: 0;
+    transform: translateY(-6px);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+
   /* ═════════ Gallery ═════════ */
   .story {
     background: var(--espresso-deep);
@@ -468,6 +518,14 @@
   </footer>
 </main>
 
+<button class="share-btn" id="shareBtn" aria-label="Share this page">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <circle cx="18" cy="5" r="2.6"/><circle cx="6" cy="12" r="2.6"/><circle cx="18" cy="19" r="2.6"/>
+    <line x1="8.3" y1="10.7" x2="15.7" y2="6.3"/><line x1="8.3" y1="13.3" x2="15.7" y2="17.7"/>
+  </svg><span>Share</span>
+</button>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
 <!-- Lightbox -->
 <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer">
   <button class="lb-btn lb-close" id="lbClose" aria-label="Close">&times;</button>
@@ -607,6 +665,7 @@
     gsap.set(bar, { yPercent: 101 });
     gsap.set(units, { autoAlpha: 0 });
     gsap.set('.cue', { autoAlpha: 0 });
+    gsap.set('.share-btn', { autoAlpha: 0, y: -12 });
 
     // The roll-up: digits sweep from 0 to live values, then the loop takes over
     var p0 = parts(Date.now());
@@ -640,7 +699,8 @@
           render(Date.now());
         }
       }, 2.25)
-      .to('.cue', { autoAlpha: 1, duration: 0.6 }, 3.1);
+      .to('.cue', { autoAlpha: 1, duration: 0.6 }, 3.1)
+      .to('.share-btn', { autoAlpha: 1, y: 0, duration: 0.6 }, 3.25);
 
     // Slow Ken Burns drift, forever
     gsap.to(photo, { scale: 1.18, duration: 26, yoyo: true, repeat: -1, ease: 'sine.inOut', delay: 1.8 });
@@ -701,6 +761,43 @@
     }
     requestAnimationFrame(drawDust);
   }
+
+  // ═════════ Share ═════════
+  var SHARE_URL = 'https://tuyishimireeric.github.io/antoeric/';
+  var shareBtn = document.getElementById('shareBtn');
+  var toast = document.getElementById('toast');
+  var toastTimer = null;
+
+  function shareText() {
+    var now = Date.now();
+    if (now >= dayEnd) return 'Eric & Antoinette were married on September 5, 2026 💍';
+    if (now >= target) return 'Today, Eric & Antoinette say “I do”! 💍';
+    var days = Math.floor((target - now) / 86400000);
+    if (days === 0) return 'Tomorrow, Eric & Antoinette say “I do”! 💍';
+    return 'Only ' + days + (days === 1 ? ' day' : ' days') + ' to go — Eric & Antoinette are getting married on September 5, 2026! 💍';
+  }
+
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toast.classList.remove('show'); }, 2800);
+  }
+
+  shareBtn.addEventListener('click', function () {
+    var days = Math.max(0, Math.floor((target - Date.now()) / 86400000));
+    var url = SHARE_URL + '?d=' + days; // per-day link so chat apps fetch a fresh preview card
+    var text = shareText();
+    if (navigator.share) {
+      navigator.share({ title: 'Eric & Antoinette — Our Wedding', text: text, url: url }).catch(function () {});
+    } else if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text + '\n' + url).then(function () {
+        showToast('Copied! Paste it into WhatsApp or anywhere.');
+      }, function () { showToast(url); });
+    } else {
+      showToast(url);
+    }
+  });
 
   // ═════════ Gallery scroll reveal ═════════
   var figures = Array.prototype.slice.call(document.querySelectorAll('.masonry figure'));

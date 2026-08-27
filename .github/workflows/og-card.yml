@@ -1,0 +1,26 @@
+name: Daily countdown card
+
+on:
+  schedule:
+    - cron: "10 22 * * *" # 00:10 in Kigali (UTC+2) — refresh the card for the new day
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  regenerate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pillow
+      - run: python scripts/generate_og.py
+      - name: Commit if changed
+        run: |
+          git config user.name "countdown-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add og.jpg index.html
+          git diff --cached --quiet || { git commit -m "Daily countdown card refresh"; git push; }
